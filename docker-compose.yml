@@ -1,0 +1,27 @@
+version: '3.2'
+
+services:
+  php:
+#    image: php:8.0.0RC5-cli
+    build:
+      context: ./
+      dockerfile: docker/php/Dockerfile
+      target: dev
+    volumes:
+      - .:/var/www/html
+      - ./docker/php/symfony.ini:/usr/local/etc/php/conf.d/symfony.ini
+      - trash:/var/www/
+    entrypoint: ./docker/php/docker-entrypoint.sh
+  nginx:
+    image: 4xxi/nginx:flex
+    depends_on:
+      - php
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+#      - ./var/log:/var/log/nginx
+      - ./docker/nginx/symfony.conf:/etc/nginx/sites-available/symfony.conf
+volumes:
+  db:
+  trash:
